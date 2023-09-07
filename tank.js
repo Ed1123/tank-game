@@ -1,5 +1,20 @@
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+class Tank {
+  constructor(x, y, width, height, color, speed) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.color = color || 'red';
+    this.speed = speed || 5;
+    this.direction = 'right';
+  }
 
-ctx.fillStyle = '#FF0000';
-ctx.fillRect(0, 0, 150, 75);
+  draw(ctx) {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+  }
+}
+
+ctx = document.getElementById('canvas').getContext('2d');
+tank = new Tank(0, 0, 20, 20, 'red', 5);
+tank.draw(ctx);
