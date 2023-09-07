@@ -1,0 +1,17 @@
+body {
+  background-color: #000000;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: #ffffff;
+  text-align: center;
+}
+
+canvas {
+  border: 1px solid rgb(255, 0, 0);
+  background-color: #000000;
+  display: block;
+  margin: 0 auto;
+}
