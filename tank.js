@@ -1,20 +1,30 @@
+TANK_HEIGHT = 20;
+TANK_WIDTH = 20;
+CANNON_HEIGHT = 5.5;
+CANNON_WIDTH = 5.5;
+
 class Tank {
-  constructor(x, y, width, height, color, speed) {
+  constructor(x, y, color) {
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
     this.color = color || 'red';
-    this.speed = speed || 5;
-    this.direction = 'right';
   }
 
   draw(ctx) {
     ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    // tank body
+    ctx.fillRect(this.x, this.y, TANK_WIDTH, TANK_HEIGHT);
+
+    // tank cannon
+    ctx.fillRect(
+      this.x + TANK_WIDTH / 2 - CANNON_WIDTH / 2,
+      this.y - CANNON_HEIGHT,
+      CANNON_WIDTH,
+      CANNON_HEIGHT
+    );
   }
 }
 
 ctx = document.getElementById('canvas').getContext('2d');
-tank = new Tank(0, 0, 20, 20, 'red', 5);
+tank = new Tank(10, 10);
 tank.draw(ctx);
