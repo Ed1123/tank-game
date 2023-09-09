@@ -1,7 +1,9 @@
-TANK_HEIGHT = 20;
-TANK_WIDTH = 20;
-CANNON_HEIGHT = 5.5;
-CANNON_WIDTH = 5.5;
+import { rand, randColor, randInt } from './utils/rand.js';
+
+const TANK_HEIGHT = 20;
+const TANK_WIDTH = 20;
+const CANNON_HEIGHT = 5.5;
+const CANNON_WIDTH = 5.5;
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -59,22 +61,10 @@ class Tank {
   }
 }
 
-function rand(from, to) {
-  return Math.random() * (to - from) + from;
-}
-
-function randInt(from, to) {
-  return Math.floor(rand(from, to));
-}
-
-function randColor() {
-  return `rgb(${randInt(0, 256)}, ${randInt(0, 256)}, ${randInt(0, 256)})`;
-}
-
 for (let i = 0; i < 5; i++) {
-  tank = new Tank(
-    rand(TANK_WIDTH / 2, CANVAS_WIDTH - TANK_WIDTH / 2),
-    rand(TANK_HEIGHT / 2, CANVAS_HEIGHT - TANK_HEIGHT / 2),
+  let tank = new Tank(
+    rand(TANK_WIDTH / 2, CANVAS_WIDTH - (3 * TANK_WIDTH) / 2),
+    rand(TANK_HEIGHT / 2, CANVAS_HEIGHT - (3 * TANK_HEIGHT) / 2),
     ['up', 'right', 'left', 'down'][randInt(0, 4)],
     randColor()
   );
