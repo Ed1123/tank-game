@@ -80,17 +80,21 @@ class Tank {
     }
   }
 }
-const rand_tanks = [];
-for (let i = 0; i < 4; i++) {
-  const tank = new Tank(
-    rand(TANK_WIDTH / 2, CANVAS_WIDTH - (3 * TANK_WIDTH) / 2),
-    rand(TANK_HEIGHT / 2, CANVAS_HEIGHT - (3 * TANK_HEIGHT) / 2),
-    ['up', 'right', 'left', 'down'][randInt(0, 4)],
-    randColor()
-  );
-  rand_tanks.push(tank);
+function generateRandTanks(n) {
+  const randTanks = [];
+  for (let i = 0; i < n; i++) {
+    const tank = new Tank(
+      rand(TANK_WIDTH / 2, CANVAS_WIDTH - (3 * TANK_WIDTH) / 2),
+      rand(TANK_HEIGHT / 2, CANVAS_HEIGHT - (3 * TANK_HEIGHT) / 2),
+      ['up', 'right', 'left', 'down'][randInt(0, 4)],
+      randColor()
+    );
+    randTanks.push(tank);
+  }
+  return randTanks;
 }
 
+const randTanks = generateRandTanks(4);
 // const test_tank = new Tank(
 //   CANVAS_WIDTH / 2,
 //   CANVAS_HEIGHT - (3 / 2) * TANK_HEIGHT,
@@ -103,7 +107,7 @@ function game() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  for (const tank of rand_tanks) {
+  for (const tank of randTanks) {
     tank.update();
     tank.draw();
   }
