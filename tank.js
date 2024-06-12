@@ -45,7 +45,11 @@ class Tank {
         console.error(`${this.direction} is incorrect.`);
     }
     ctx.translate(-centerX, -centerY);
+    this.drawTank();
+    ctx.resetTransform();
+  }
 
+  drawTank() {
     // tank body
     ctx.fillRect(this.x, this.y, TANK_WIDTH, TANK_HEIGHT);
 
@@ -56,9 +60,6 @@ class Tank {
       CANNON_WIDTH,
       CANNON_HEIGHT
     );
-
-    // reset context for next drawings
-    ctx.resetTransform();
   }
 
   move(direction) {
@@ -81,27 +82,29 @@ class Tank {
     }
   }
 }
-function generateRandTanks(n) {
+
+function generateRandTanks(n, speed) {
   const randTanks = [];
   for (let i = 0; i < n; i++) {
     const tank = new Tank(
       rand(TANK_WIDTH / 2, CANVAS_WIDTH - (3 * TANK_WIDTH) / 2),
       rand(TANK_HEIGHT / 2, CANVAS_HEIGHT - (3 * TANK_HEIGHT) / 2),
       ['up', 'right', 'left', 'down'][randInt(0, 4)],
-      randColor()
+      randColor(),
+      speed
     );
     randTanks.push(tank);
   }
   return randTanks;
 }
 
-const randTanks = generateRandTanks(4);
-const tank = new Tank(
+const mainTank = new Tank(
   CANVAS_WIDTH / 2,
   CANVAS_HEIGHT - (3 / 2) * TANK_HEIGHT,
   'down',
   'white'
 );
+const randTanks = generateRandTanks(5);
 
 let rightPressed = false;
 let leftPressed = false;
@@ -145,24 +148,38 @@ function handleKeyUp(event) {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
-function game() {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-  ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  tank.draw();
-  for (const tank of randTanks) {
-    tank.move();
-    tank.draw();
-  }
-  if (rightPressed) {
-    tank.move('right');
-  } else if (leftPressed) {
-    tank.move('left');
-  } else if (upPressed) {
-    tank.move('up');
-  } else if (downPressed) {
-    tank.move('down');
+function game(enemiesCount, enemiesSpeed, userSpeed) {
+  const mainTank = new Tank(
+    CANVAS_WIDTH / 2,
+    CANVAS_HEIGHT - (3 / 2) * TANK_HEIGHT,
+    'down',
+    'white',
+    userSpeed
+  );
+  const randTanks = generateRandTanks(enemiesCount, enemiesSpeed);
+
+  function gameLoop() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    for (const tank of randTanks) {
+      tank.move();
+      tank.draw();
+    }
+    mainTank.draw();
+    if (rightPressed) {
+      mainTank.move('right');
+    } else if (leftPressed) {
+      mainTank.move('left');
+    } else if (upPressed) {
+      mainTank.move('up');
+    } else if (downPressed) {
+      mainTank.move('down');
+    }
+
+    requestAnimationFrame(gameLoop);
   }
 
-  requestAnimationFrame(game);
+  gameLoop();
 }
-game();
+
+game(5, 0.4, 0.4);
