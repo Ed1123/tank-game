@@ -2,14 +2,48 @@ import { rand, randColor, randInt } from './utils/rand.js';
 
 const TANK_HEIGHT = 20;
 const TANK_WIDTH = 20;
-const CANNON_HEIGHT = 5.5;
-const CANNON_WIDTH = 5.5;
+const CANNON_HEIGHT = TANK_HEIGHT / 3.6;
+const CANNON_WIDTH = TANK_WIDTH / 3.6;
+const BULLET_SIZE = TANK_HEIGHT / 4;
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
 const CANVAS_WIDTH = canvas.width;
 const CANVAS_HEIGHT = canvas.height;
+
+class Bullet {
+  constructor(x, y, direction, speed) {
+    this.x = x;
+    this.y = y;
+    this.direction = direction;
+    this.speed = speed;
+  }
+
+  draw() {
+    ctx.fillStyle = 'red';
+    ctx.fillRect(this.x, this.y, BULLET_SIZE, BULLET_SIZE);
+  }
+
+  move() {
+    switch (this.direction) {
+      case 'up':
+        this.y -= this.speed;
+        break;
+      case 'right':
+        this.x += this.speed;
+        break;
+      case 'left':
+        this.x -= this.speed;
+        break;
+      case 'down':
+        this.y += this.speed;
+        break;
+      default:
+        console.error(`${this.direction} is incorrect.`);
+    }
+  }
+}
 
 class Tank {
   constructor(x, y, direction, color, speed) {
@@ -81,6 +115,16 @@ class Tank {
         console.error(`${direction} is incorrect.`);
     }
   }
+
+  shoot() {
+    const bullet = new Bullet(
+      this.x + TANK_WIDTH / 2 - BULLET_SIZE / 2,
+      this.y + TANK_HEIGHT + CANNON_HEIGHT,
+      this.direction,
+      0.5
+    );
+    bullet.draw();
+  }
 }
 
 function generateRandTanks(n, speed) {
@@ -98,14 +142,7 @@ function generateRandTanks(n, speed) {
   return randTanks;
 }
 
-const mainTank = new Tank(
-  CANVAS_WIDTH / 2,
-  CANVAS_HEIGHT - (3 / 2) * TANK_HEIGHT,
-  'down',
-  'white'
-);
-const randTanks = generateRandTanks(5);
-
+// handle user input
 let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
@@ -174,10 +211,21 @@ function game(enemiesCount, enemiesSpeed, userSpeed) {
       mainTank.move('up');
     } else if (downPressed) {
       mainTank.move('down');
+      mainTank.shoot();
     }
+
+    const bullet = new Bullet(10, 10, 'up', 0.5);
+    bullet.draw();
 
     requestAnimationFrame(gameLoop);
   }
+  // each frame every element in the canvas needs to be redrawn
+  // This are all the elements: bullets, tanks, walls,
+  // also, in each frame collisions need to be checked
+  // and the game state needs to be updated:
+  // - Remove a tank if it is hit by a bullet
+  // - Remove a bullet if it hits a wall
+  // - score?
 
   gameLoop();
 }
