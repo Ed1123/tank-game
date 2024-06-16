@@ -10,11 +10,11 @@ const CTX = CANVAS.getContext('2d');
 const CANVAS_WIDTH = CANVAS.width;
 const CANVAS_HEIGHT = CANVAS.height;
 
-function generateRandTanks(n, speed) {
+function generateRandTanks(ctx, n, speed) {
   const randTanks = [];
   for (let i = 0; i < n; i++) {
     const tank = new Tank(
-      CTX,
+      ctx,
       rand(TANK_WIDTH / 2, CANVAS_WIDTH - (3 * TANK_WIDTH) / 2),
       rand(TANK_HEIGHT / 2, CANVAS_HEIGHT - (3 * TANK_HEIGHT) / 2),
       ['up', 'right', 'left', 'down'][randInt(0, 4)],
@@ -26,6 +26,53 @@ function generateRandTanks(n, speed) {
     randTanks.push(tank);
   }
   return randTanks;
+}
+
+class Game {
+  constructor(ctx, enemiesCount, enemiesSpeed, userSpeed) {
+    this.ctx = ctx;
+    this.mainTank = new Tank(
+      ctx,
+      CANVAS_WIDTH / 2,
+      CANVAS_HEIGHT - (3 / 2) * TANK_HEIGHT,
+      'down',
+      'white',
+      userSpeed,
+      TANK_HEIGHT,
+      TANK_WIDTH
+    );
+    this.randTanks = generateRandTanks(ctx, enemiesCount, enemiesSpeed);
+    this.bullets = [];
+
+    // Bind the gameLoop method to the Game class
+    // just weird JS behavior, alternative is line 26: requestAnimationFrame(() => this.gameLoop());
+    // this.gameLoop = this.gameLoop.bind(this);
+  }
+
+  gameLoop() {
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    for (const tank of this.randTanks) {
+      console.log(tank);
+      tank.move();
+      tank.draw();
+    }
+    this.mainTank.draw();
+    if (rightPressed) {
+      this.mainTank.move('right');
+    } else if (leftPressed) {
+      this.mainTank.move('left');
+    } else if (upPressed) {
+      this.mainTank.move('up');
+    } else if (downPressed) {
+      this.mainTank.move('down');
+      this.mainTank.shoot();
+    }
+
+    const bullet = new Bullet(this.ctx, 10, 10, 'up', 0.5);
+    bullet.draw();
+    requestAnimationFrame(() => this.gameLoop());
+  }
 }
 
 // handle user input
@@ -67,63 +114,8 @@ function handleKeyUp(event) {
       break;
   }
 }
-
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
-function game(enemiesCount, enemiesSpeed, userSpeed) {
-  const mainTank = new Tank(
-    CTX,
-    CANVAS_WIDTH / 2,
-    CANVAS_HEIGHT - (3 / 2) * TANK_HEIGHT,
-    'down',
-    'white',
-    userSpeed,
-    TANK_HEIGHT,
-    TANK_WIDTH
-  );
-  const randTanks = generateRandTanks(enemiesCount, enemiesSpeed);
-
-  function gameLoop() {
-    CTX.fillStyle = 'rgba(0, 0, 0, 0.25)';
-    CTX.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    for (const tank of randTanks) {
-      tank.move();
-      tank.draw();
-    }
-    mainTank.draw();
-    if (rightPressed) {
-      mainTank.move('right');
-    } else if (leftPressed) {
-      mainTank.move('left');
-    } else if (upPressed) {
-      mainTank.move('up');
-    } else if (downPressed) {
-      mainTank.move('down');
-      mainTank.shoot();
-    }
-
-    const bullet = new Bullet(CTX, 10, 10, 'up', 0.5);
-    bullet.draw();
-
-    /*
-    handleUserInput(tank); // update tank position based on user input
-    draw tanks (input is handled somewhere else? maybe another function)
-    draw bullets 
-     */
-
-    requestAnimationFrame(gameLoop);
-  }
-  // define game initial state
-  // each frame every element in the canvas needs to be redrawn
-  // This are all the elements: bullets, tanks, walls,
-  // also, in each frame collisions need to be checked
-  // and the game state needs to be updated:
-  // - Remove a tank if it is hit by a bullet
-  // - Remove a bullet if it hits a wall
-  // - score?
-
-  gameLoop();
-}
-
-game(5, 0.4, 0.4);
+const game = new Game(CTX, 5, 0.2, 0.4);
+game.gameLoop();
