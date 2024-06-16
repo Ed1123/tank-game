@@ -1,14 +1,13 @@
-import { Bullet, Tank } from './models.js';
+import { Tank } from './models.js';
 import { rand, randColor, randInt } from './utils/rand.js';
-
-const TANK_HEIGHT = 20;
-const TANK_WIDTH = 20;
 
 const CANVAS = document.querySelector('canvas');
 const CTX = CANVAS.getContext('2d');
 
 const CANVAS_WIDTH = CANVAS.width;
 const CANVAS_HEIGHT = CANVAS.height;
+const TANK_HEIGHT = 20;
+const TANK_WIDTH = 20;
 
 function generateRandTanks(ctx, n, speed) {
   const randTanks = [];
@@ -52,6 +51,10 @@ class Game {
   gameLoop() {
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    for (const bullet of this.bullets) {
+      bullet.move();
+      bullet.draw();
+    }
     for (const tank of this.randTanks) {
       console.log(tank);
       tank.move();
@@ -66,11 +69,10 @@ class Game {
       this.mainTank.move('up');
     } else if (downPressed) {
       this.mainTank.move('down');
-      this.mainTank.shoot();
+    } else if (spacePressed) {
+      this.bullets.push(this.mainTank.shoot());
     }
 
-    const bullet = new Bullet(this.ctx, 10, 10, 'up', 0.5);
-    bullet.draw();
     requestAnimationFrame(() => this.gameLoop());
   }
 }
@@ -80,6 +82,7 @@ let rightPressed = false;
 let leftPressed = false;
 let upPressed = false;
 let downPressed = false;
+let spacePressed = false;
 
 function handleKeyDown(event) {
   switch (event.code) {
@@ -94,6 +97,9 @@ function handleKeyDown(event) {
       break;
     case 'ArrowDown':
       downPressed = true;
+      break;
+    case 'Space':
+      spacePressed = true;
       break;
   }
 }
@@ -111,6 +117,9 @@ function handleKeyUp(event) {
       break;
     case 'ArrowDown':
       downPressed = false;
+      break;
+    case 'Space':
+      spacePressed = false;
       break;
   }
 }

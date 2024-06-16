@@ -107,18 +107,54 @@ export class Tank {
         this.y += this.speed;
         break;
       default:
-        console.error(`${direction} is incorrect.`);
+        console.error(`${this.direction} is incorrect.`);
     }
   }
 
   shoot() {
-    const bullet = new Bullet(
-      this.ctx,
-      this.x + this.width / 2 - this.bulletSize / 2,
-      this.y + this.height + this.cannonHeight,
-      this.direction,
-      this.speed
-    );
-    bullet.draw();
+    console.log('shoot');
+    console.log(this.direction);
+    let bullet;
+    switch (this.direction) {
+      case 'up':
+        bullet = new Bullet(
+          this.ctx,
+          this.x + this.width / 2 - this.bulletSize / 2,
+          this.y - this.bulletSize - this.cannonHeight,
+          this.direction,
+          this.speed
+        );
+        break;
+      case 'right':
+        bullet = new Bullet(
+          this.ctx,
+          this.x + this.cannonHeight + this.width,
+          this.y + this.width / 2 - this.bulletSize / 2,
+          this.direction,
+          this.speed
+        );
+        break;
+      case 'left':
+        bullet = new Bullet(
+          this.ctx,
+          this.x - this.bulletSize - this.cannonHeight,
+          this.y + this.width / 2 - this.bulletSize / 2,
+          this.direction,
+          this.speed
+        );
+        break;
+      case 'down':
+        bullet = new Bullet(
+          this.ctx,
+          this.x + this.width / 2 - this.bulletSize / 2,
+          this.y + this.height + this.cannonHeight,
+          this.direction,
+          this.speed
+        );
+        break;
+      default:
+        console.error(`${this.direction} is incorrect.`);
+    }
+    return bullet;
   }
 }
